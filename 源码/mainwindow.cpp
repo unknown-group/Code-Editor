@@ -95,3 +95,109 @@ MainWindow::~MainWindow()
 {
     delete text1;
 }
+void MainWindow::on_open()
+{
+    filename=QFileDialog::getOpenFileName();
+    //函数返回路径+文件名
+    qDebug()<<filename;
+    if(filename.isEmpty())
+    {
+        return;
+    }
+
+    QString content;
+    //QMessageBox::information(this,"提示","test");
+
+    //filename.toStdString().data();
+    //这个语句将QString类型转化为const char *类型
+    //需要将QString转换为const char *
+    FILE *p=fopen(filename.toStdString().data(),"r");//需要将QString转换为const char *
+    if(p==NULL)
+    {
+        QMessageBox::information(this,"错误","打开文件失败");
+    }
+    else
+    {
+        while(!feof(p))
+        {
+            //将读取到的内容追加到content后面
+            char buf[1024]={0};
+            fgets(buf,sizeof(buf),p);
+            content+=buf;
+        }
+      fclose(p);
+      //将字符串的值放到text里面
+      text1->setText(content);
+    }
+}
+void MainWindow::on_about()
+{
+    QMessageBox::information(this,"帮助","QQ：2031295812");
+}
+
+void MainWindow::on_exit()
+{
+    exit(0);
+}
+
+void MainWindow::on_copy()
+{
+    text1->copy();
+}
+
+void MainWindow::on_cut()
+{
+   text1->cut();
+}
+
+void MainWindow::on_paste()
+{
+    text1->paste();
+}
+
+void MainWindow::on_selectall()
+{
+    text1->selectAll();
+}
+
+void MainWindow::on_save()
+{
+     savefilename=QFileDialog::getSaveFileName();
+     if(savefilename==NULL)
+     {
+         return;
+     }
+     FILE *p=fopen(savefilename.toStdString().data(),"w");
+     if(p==NULL)
+     {
+         QMessageBox::information(this,"错误","打开文件失败");
+         return;
+     }
+     else
+     {
+         // text1->toPlainText().toStdString().data();
+         //将用户在控件中输入的字符串转化为const char *
+         fputs(text1->toPlainText().toStdString().data(),p);
+         fclose(p);
+     }
+}
+void MainWindow::on_compile()
+{
+    QString dest=filename;
+
+    QString dest1 =  dest.replace(".c","");
+    //qDebug() << dest;
+
+    int i = system(("gcc -o "+ dest +" "+ filename).toStdString().data());
+    //qDebug()<<i;
+    QMessageBox::information(this,"notify","build success!");
+
+}
+void MainWindow::on_run()
+{
+    QString desfilename=filename;
+    //qDebug() << desfilename;
+    desfilename.replace(".c","");
+    system(("start "+desfilename).toLatin1().data());
+
+}
