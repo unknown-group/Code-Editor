@@ -1,6 +1,10 @@
 #include "mainwindow.h"
 #include "QMessageBox"
 #include "QFileDialog"
+#include<QDebug>
+#include<QFileDialog>
+#include <QFile>
+#include <QTextStream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -18,6 +22,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     //将text1放到对话框中
     this->setCentralWidget(text1);
+
+
+    setUpHighlighter();
+
 
     //在菜单栏中添加功能
     file=this->menuBar()->addMenu("文件");
@@ -95,6 +103,17 @@ MainWindow::~MainWindow()
 {
     delete text1;
 }
+
+void MainWindow::setUpHighlighter(){
+  QFont font;
+  font.setFamily("Courier");
+  font.setFixedPitch(true);
+  //font.setPointSize(20);
+  text1->setFont(font);
+  text1->setTabStopWidth(fontMetrics().width(QLatin1Char('9'))*4);
+  highlighter=new Highlighter(text1->document());
+}
+
 void MainWindow::on_open()
 {
     filename=QFileDialog::getOpenFileName();

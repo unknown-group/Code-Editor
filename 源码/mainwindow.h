@@ -6,6 +6,9 @@
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
+#include <QDebug>
+#include "highlighter.h"
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -17,8 +20,9 @@ private:
     QString filename;
     QString savefilename;
 
-
 private :
+    Highlighter *highlighter;
+    void setUpHighlighter();
     QTextEdit *text1;
     QMenu *file;
     QMenu *edit;
