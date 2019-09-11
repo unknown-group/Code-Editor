@@ -9,7 +9,6 @@ QT_BEGIN_NAMESPACE
 class QTextDocument;
 QT_END_NAMESPACE
 
-//! [0]
 class Highlighter : public QSyntaxHighlighter
 {
     Q_OBJECT
@@ -38,6 +37,5 @@ private:
     QTextCharFormat quotationFormat;
     QTextCharFormat functionFormat;
 };
-//! [0]
 
 #endif // HIGHLIGHTER_H
