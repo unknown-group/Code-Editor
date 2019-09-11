@@ -1,24 +1,37 @@
+<<<<<<< Updated upstream
 #include "mainwindow.h"
 #include "QMessageBox"
 #include "QFileDialog"
+=======
+﻿#include "mainwindow.h"
+>>>>>>> Stashed changes
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
 {
+    //文本框
+    text1 = new CodeEditor;
+
+    setUpHighlighter();
+
     //设置字体大小
-    text1=new QTextEdit;
     QFont f;
     f.setPixelSize(24);
     text1->setFont(f);
 
     //设置字体颜色
     QColor c;
-    c.setRgb(169,169,169);
-    text1->setTextColor(c);
+    c.setRgb(255,255,255);
+    text1->setPalette(c);
 
     //将text1放到对话框中
     this->setCentralWidget(text1);
 
+<<<<<<< Updated upstream
+=======
+    //设置背景颜色，调用行高亮
+    text1->setStyleSheet("background:#ffffff;");
+
+>>>>>>> Stashed changes
     //在菜单栏中添加功能
     file=this->menuBar()->addMenu("文件");
     edit=this->menuBar()->addMenu("编辑");
@@ -90,8 +103,217 @@ MainWindow::MainWindow(QWidget *parent)
     connect(file_save,SIGNAL(triggered()),this,SLOT(on_save()));
     connect(build_compile,SIGNAL(triggered()),this,SLOT(on_compile()));
     connect(build_run,SIGNAL(triggered()),this,SLOT(on_run()));
+
 }
 MainWindow::~MainWindow()
 {
     delete text1;
 }
+<<<<<<< Updated upstream
+=======
+void MainWindow::on_open()
+{
+    filename=QFileDialog::getOpenFileName();
+    //函数返回路径+文件名
+    qDebug()<<filename;
+    if(filename.isEmpty())
+    {
+        return;
+    }
+
+    QString content;
+    //QMessageBox::information(this,"提示","test");
+
+    //filename.toStdString().data();
+    //这个语句将QString类型转化为const char *类型
+    //需要将QString转换为const char *
+    FILE *p=fopen(filename.toStdString().data(),"r");//需要将QString转换为const char *
+    if(p==NULL)
+    {
+        QMessageBox::information(this,"错误","打开文件失败");
+    }
+    else
+    {
+        while(!feof(p))
+        {
+            //将读取到的内容追加到content后面
+            char buf[1024]={0};
+            fgets(buf,sizeof(buf),p);
+            content+=buf;
+        }
+      fclose(p);
+      //将字符串的值放到text里面
+      text1->setPlainText(content);
+    }
+}
+void MainWindow::on_about()
+{
+    QMessageBox::information(this,"帮助","QQ：2031295812");
+}
+
+void MainWindow::on_exit()
+{
+    exit(0);
+}
+
+void MainWindow::on_copy()
+{
+    text1->copy();
+}
+
+void MainWindow::on_cut()
+{
+   text1->cut();
+}
+
+void MainWindow::on_paste()
+{
+    text1->paste();
+}
+
+void MainWindow::on_selectall()
+{
+    text1->selectAll();
+}
+
+void MainWindow::on_save()
+{
+     savefilename=QFileDialog::getSaveFileName();
+     if(savefilename==NULL)
+     {
+         return;
+     }
+     FILE *p=fopen(savefilename.toStdString().data(),"w");
+     if(p==NULL)
+     {
+         QMessageBox::information(this,"错误","打开文件失败");
+         return;
+     }
+     else
+     {
+         // text1->toPlainText().toStdString().data();
+         //将用户在控件中输入的字符串转化为const char *
+         fputs(text1->toPlainText().toStdString().data(),p);
+         fclose(p);
+     }
+}
+void MainWindow::on_compile()
+{
+    QString dest=filename;
+
+    QString dest1 =  dest.replace(".c","");
+    //qDebug() << dest;
+
+    int i = system(("gcc -o "+ dest +" "+ filename).toStdString().data());
+    //qDebug()<<i;
+    QMessageBox::information(this,"notify","build success!");
+
+}
+void MainWindow::on_run()
+{
+    QString desfilename=filename;
+    //qDebug() << desfilename;
+    desfilename.replace(".c","");
+    system(("start "+desfilename).toLatin1().data());
+
+}
+//新文本框的定义
+CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
+{
+    lineNumberArea = new LineNumberArea(this);
+
+    connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
+    connect(this, SIGNAL(updateRequest(QRect,int)), this, SLOT(updateLineNumberArea(QRect,int)));
+    connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
+
+    updateLineNumberAreaWidth(0);
+}
+
+//行高亮
+void CodeEditor::highlightCurrentLine()
+{
+   QList<QTextEdit::ExtraSelection> extraSelections;
+   QTextEdit::ExtraSelection selection;
+   QColor lineColor = QColor(Qt::red).lighter(160);
+   selection.format.setBackground(lineColor);
+   selection.format.setProperty(QTextFormat::FullWidthSelection, true);
+   selection.cursor = textCursor();
+   selection.cursor.clearSelection();
+   extraSelections.append(selection);
+   setExtraSelections(extraSelections);
+}
+//更新行号显示栏的宽度设置
+void CodeEditor::updateLineNumberAreaWidth(int /* newBlockCount */)
+{
+    setViewportMargins(lineNumberAreaWidth(), 0, 0, 0);
+}
+//更新行号显示栏的宽度
+void CodeEditor::updateLineNumberArea(const QRect &rect, int dy)
+{
+    if (dy)
+        lineNumberArea->scroll(0, dy);
+    else
+        lineNumberArea->update(0, rect.y(), lineNumberArea->width(), rect.height());
+
+    if (rect.contains(viewport()->rect()))
+        updateLineNumberAreaWidth(0);
+}
+//计算行号显示栏的宽度
+int CodeEditor::lineNumberAreaWidth()
+{
+    int digits = 1;
+    int max = qMax(1, blockCount());
+    while (max >= 10) {
+        max /= 10;
+        ++digits;
+    }
+
+    int space = 3 + fontMetrics().width(QLatin1Char('9')) * digits;
+
+    return space;
+}
+//放大的时候从新定位行号显示栏
+void CodeEditor::resizeEvent(QResizeEvent *e)
+{
+    QPlainTextEdit::resizeEvent(e);
+
+    QRect cr = contentsRect();
+    lineNumberArea->setGeometry(QRect(cr.left(), cr.top(), lineNumberAreaWidth(), cr.height()));
+}
+//绘制行数显示框
+void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
+{
+    QPainter painter(lineNumberArea);
+    painter.fillRect(event->rect(), Qt::lightGray);
+
+
+    QTextBlock block = firstVisibleBlock();
+    int blockNumber = block.blockNumber();
+    int top = (int) blockBoundingGeometry(block).translated(contentOffset()).top();
+    int bottom = top + (int) blockBoundingRect(block).height();
+
+    while (block.isValid() && top <= event->rect().bottom()) {
+        if (block.isVisible() && bottom >= event->rect().top()) {
+            QString number = QString::number(blockNumber + 1);
+            painter.setPen(Qt::black);
+            painter.drawText(-2, top, lineNumberArea->width(), fontMetrics().height(),
+                             Qt::AlignRight, number);
+        }
+
+        block = block.next();
+        top = bottom;
+        bottom = top + (int) blockBoundingRect(block).height();
+        ++blockNumber;
+    }
+}
+
+void MainWindow::setUpHighlighter(){
+  QFont font;
+  font.setFamily("Courier");
+  font.setFixedPitch(true);
+  //font.setPointSize(20);
+  text1->setFont(font);
+  text1->setTabStopWidth(fontMetrics().width(QLatin1Char('9'))*4);
+  highlighter=new Highlighter(text1->document());
+}
+>>>>>>> Stashed changes
