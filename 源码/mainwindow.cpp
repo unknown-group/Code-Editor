@@ -7,9 +7,19 @@ MainWindow::MainWindow(QWidget *parent)
 {
     //设置字体大小
     text1=new QTextEdit;
+    this->setFixedSize(1000,800);
+
+
+    browser = new QTextBrowser(this);
+
+
+    browser->setGeometry(0,650,1000,170);
+
+
     QFont f;
     f.setPixelSize(24);
     text1->setFont(f);
+    text1->setFixedSize(1000,600);
 
     //设置字体颜色
     QColor c;
@@ -18,6 +28,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     //将text1放到对话框中
     this->setCentralWidget(text1);
+    QChar T = text1->textCursor().WordUnderCursor;
+    qDebug()<<T;
+
 
     //在菜单栏中添加功能
     file=this->menuBar()->addMenu("文件");
@@ -68,6 +81,10 @@ MainWindow::MainWindow(QWidget *parent)
     select_all=new QAction("全选",this);
     edit->addAction(select_all);
 
+    //建立一个子菜单选项-撤回
+    edit_undo = new QAction("撤回",this);
+    edit->addAction(edit_undo);
+
     //建立一个子菜单选项-编译
     build_compile=new QAction("编译",this);
     build->addAction(build_compile);
@@ -76,6 +93,8 @@ MainWindow::MainWindow(QWidget *parent)
     build_run=new QAction("运行",this);
     build->addAction(build_run);
     build_run->setShortcut(tr("Ctrl+R"));
+
+
 
     //Qt的消息槽机制
     connect(file_open,SIGNAL(triggered()),this,SLOT(on_open()));
@@ -87,6 +106,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(edit_cut,SIGNAL(triggered()),this,SLOT(on_cut()));
     connect(edit_paste,SIGNAL(triggered()),this,SLOT(on_paste()));
     connect(select_all,SIGNAL(triggered()),this,SLOT(on_selectall()));
+    connect(edit_undo,SIGNAL(triggered()),this,SLOT(on_undo()));
     connect(file_save,SIGNAL(triggered()),this,SLOT(on_save()));
     connect(build_compile,SIGNAL(triggered()),this,SLOT(on_compile()));
     connect(build_run,SIGNAL(triggered()),this,SLOT(on_run()));
@@ -158,8 +178,13 @@ void MainWindow::on_paste()
 void MainWindow::on_selectall()
 {
     text1->selectAll();
+
 }
 
+void MainWindow::on_undo()
+{
+    text1->undo();
+}
 void MainWindow::on_save()
 {
      savefilename=QFileDialog::getSaveFileName();

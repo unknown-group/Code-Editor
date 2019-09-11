@@ -3,9 +3,12 @@
 
 #include <QMainWindow>
 #include <QTextEdit>
+#include <QTextBrowser>
 #include <QMenu>
 #include <QMenuBar>
 #include <QAction>
+#include <QDebug>
+#include <QTextCursor>
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -20,6 +23,8 @@ private:
 
 private :
     QTextEdit *text1;
+    QTextBrowser *browser;
+    QTextCursor *cursor;
     QMenu *file;
     QMenu *edit;
     QMenu *build;
@@ -35,6 +40,7 @@ private :
     QAction *edit_copy;
     QAction *edit_cut;
     QAction *edit_paste;
+    QAction *edit_undo;
 
     QAction *select_all;
     QAction *file_save;
@@ -52,7 +58,7 @@ private slots:
     void on_paste();
     void on_selectall();
     void on_save();
-
+    void on_undo();
     void on_compile();
     void on_run();
 
