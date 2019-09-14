@@ -1,31 +1,14 @@
-﻿#ifndef MAINWINDOW_H
+#ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QPlainTextEdit>
+#include <QTextEdit>
 #include <QMenu>
 #include <QMenuBar>
-#include <QWidget>
-#include <QResizeEvent>
-#include <QSize>
-#include <QPaintEvent>
 #include <QAction>
-<<<<<<< Updated upstream
-=======
-#include <QtDebug>
 #include <QDebug>
-#include <qpainter.h>
-#include <QTextBlock>
-#include <QFile>
-#include <QTextStream>
-#include "highlighter.h"
-#include <QMessageBox>
-#include <QFileDialog>
+#include <QStringList>
 
-class LineNumberArea;
-class CodeEditor;
-
->>>>>>> Stashed changes
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -33,34 +16,35 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    CodeEditor *text1;
-    Highlighter *highlighter;
-    void setUpHighlighter();
-
 private:
     QString filename;
     QString savefilename;
-
+    QString content;
 
 private :
-<<<<<<< Updated upstream
     QTextEdit *text1;
-=======
->>>>>>> Stashed changes
     QMenu *file;
     QMenu *edit;
     QMenu *build;
     QMenu *help;
 
+    QStringList openedFiles;
+
+    QAction *file_new;
     QAction *file_open;
     QAction *file_exit;
     QAction *help_about;
+
     QAction *edit_copy;
     QAction *edit_cut;
     QAction *edit_paste;
+
     QAction *select_all;
     QAction *file_save;
+    QAction *file_save_as;
+
     QAction *build_compile;
+
     QAction *build_run;
 
 private slots:
@@ -72,50 +56,11 @@ private slots:
     void on_paste();
     void on_selectall();
     void on_save();
-
+    void on_save_as();
+    void on_new();
     void on_compile();
     void on_run();
 
-};
-//我把文本编辑框从TextEdit换成了PlainTextEdit
-class CodeEditor : public QPlainTextEdit
-{
-    Q_OBJECT
-public:
-    CodeEditor(QWidget *parent = 0);
-    void lineNumberAreaPaintEvent(QPaintEvent *event);
-    int lineNumberAreaWidth();
-    QWidget *lineNumberArea;
-
-protected:
-    void resizeEvent(QResizeEvent *event) Q_DECL_OVERRIDE;
-
-private slots:
-    void updateLineNumberAreaWidth(int newBlockCount);
-    void highlightCurrentLine();
-    void updateLineNumberArea(const QRect &, int);
-
-};
-//行数框
-class LineNumberArea : public QWidget
-{
-    Q_OBJECT
-public:
-    LineNumberArea(CodeEditor *editor) : QWidget(editor) {
-        CodeEditor = editor;
-    }
-
-    QSize sizeHint() const Q_DECL_OVERRIDE {
-        return QSize(CodeEditor->lineNumberAreaWidth(), 0);
-    }
-
-protected:
-    void paintEvent(QPaintEvent *event) Q_DECL_OVERRIDE {
-    CodeEditor->lineNumberAreaPaintEvent(event);
-    }
-
-private:
-    CodeEditor *CodeEditor;
 };
 
 #endif // MAINWINDOW_H

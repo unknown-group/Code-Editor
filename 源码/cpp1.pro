@@ -1,5 +1,5 @@
 #-------------------------------------------------
-#/
+#
 # Project created by QtCreator 2019-09-03T15:35:31
 #
 #-------------------------------------------------
@@ -25,12 +25,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
-        highlighter.cpp \
+        complete.cpp \
         main.cpp \
         mainwindow.cpp
 
 HEADERS += \
-        highlighter.h \
+        complete.h \
         mainwindow.h
 
 # Default rules for deployment.
