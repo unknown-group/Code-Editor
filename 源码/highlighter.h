@@ -9,6 +9,7 @@ QT_BEGIN_NAMESPACE
 class QTextDocument;
 QT_END_NAMESPACE
 
+
 class Highlighter : public QSyntaxHighlighter
 {
     Q_OBJECT
@@ -30,12 +31,13 @@ private:
     QRegularExpression commentStartExpression;
     QRegularExpression commentEndExpression;
 
-    QTextCharFormat keywordFormat;
-    QTextCharFormat classFormat;
-    QTextCharFormat singleLineCommentFormat;
-    QTextCharFormat multiLineCommentFormat;
-    QTextCharFormat quotationFormat;
-    QTextCharFormat functionFormat;
+    QTextCharFormat keywordFormat;//关键字 规则
+    QTextCharFormat classFormat;//类 规则
+    QTextCharFormat singleLineCommentFormat;//注释 规则
+    QTextCharFormat multiLineCommentFormat;//注释
+    QTextCharFormat quotationFormat;//头文件
+    QTextCharFormat functionFormat;//函数
 };
+
 
 #endif // HIGHLIGHTER_H

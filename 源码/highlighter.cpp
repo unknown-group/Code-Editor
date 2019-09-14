@@ -1,10 +1,13 @@
 #include "highlighter.h"
 
+
 Highlighter::Highlighter(QTextDocument *parent)
     : QSyntaxHighlighter(parent)
 {
     HighlightingRule rule;
 
+
+    //关键字 规则
     keywordFormat.setForeground(QColor(201,81,116));
     keywordFormat.setFontWeight(QFont::Bold);
     QStringList keywordPatterns;
@@ -26,18 +29,19 @@ Highlighter::Highlighter(QTextDocument *parent)
         rule.pattern = QRegularExpression(pattern);
         rule.format = keywordFormat;
         highlightingRules.append(rule);
+
     }
 
 
-    //1，类 规则
+
+    //类 规则
     classFormat.setFontWeight(QFont::Bold);
     classFormat.setForeground(Qt::darkMagenta);
     rule.pattern = QRegularExpression("(?<=class\\s)\\w*");
     rule.format = classFormat;
     highlightingRules.append(rule);
 
-
-    //2，注释代码 规则
+    //注释代码 规则
     singleLineCommentFormat.setForeground(Qt::green);
     rule.pattern = QRegularExpression("//[^\n]*");
     rule.format = singleLineCommentFormat;
@@ -45,20 +49,21 @@ Highlighter::Highlighter(QTextDocument *parent)
 
     multiLineCommentFormat.setForeground(Qt::green);
 
-
-    //3，头文件包含规则
+    //头文件包含规则
     quotationFormat.setForeground(Qt::darkGreen);
     rule.pattern = QRegularExpression("(?<=#include\\s)(<.*>)|(?<=#include)(<.*>)|(?<=#include\\s)(\".*\")|(?<=#include)(\".*\")|\".*\"");
     rule.format = quotationFormat;
     highlightingRules.append(rule);
 
-    //4，函数 规则
+    //函数 规则
     functionFormat.setFontItalic(true);
     functionFormat.setForeground(QColor(115,182,209));
     rule.pattern = QRegularExpression("\\b[A-Za-z0-9_]+(?=\\()");
     rule.format = functionFormat;
     highlightingRules.append(rule);
 
+
+    //注释 规则
     commentStartExpression = QRegularExpression("/\\*");
     commentEndExpression = QRegularExpression("\\*/");
 }
@@ -81,7 +86,6 @@ void Highlighter::highlightBlock(const QString &text)
 
 
     while (startIndex >= 0) {
-
         QRegularExpressionMatch match = commentEndExpression.match(text, startIndex);
         int endIndex = match.capturedStart();
         int commentLength = 0;
@@ -96,4 +100,3 @@ void Highlighter::highlightBlock(const QString &text)
         startIndex = text.indexOf(commentStartExpression, startIndex + commentLength);
     }
 }
-
