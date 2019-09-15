@@ -11,8 +11,17 @@
 #include <QPaintEvent>
 #include <QAction>
 #include <QtDebug>
+#include <QDebug>
 #include <qpainter.h>
 #include <QTextBlock>
+#include <QFile>
+#include <QTextStream>
+#include "highlighter.h"
+#include <QMessageBox>
+#include <QFileDialog>
+#include <QTextBrowser>
+#include <QProcess>
+
 class LineNumberArea;
 class CodeEditor;
 
@@ -24,12 +33,16 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
     CodeEditor *text1;
+    Highlighter *highlighter;
+    void setUpHighlighter();
+    QPlainTextEdit *browser;
+    QProcess *cmd;
+
 private:
     QString filename;
     QString savefilename;
 
 private :
-
     QMenu *file;
     QMenu *edit;
     QMenu *build;
@@ -38,16 +51,12 @@ private :
     QAction *file_open;
     QAction *file_exit;
     QAction *help_about;
-
     QAction *edit_copy;
     QAction *edit_cut;
     QAction *edit_paste;
-
     QAction *select_all;
     QAction *file_save;
-
     QAction *build_compile;
-
     QAction *build_run;
 
 private slots:

@@ -1,27 +1,35 @@
 ﻿#include "mainwindow.h"
-#include "QMessageBox"
-#include "QFileDialog"
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent)
 {
+    this->setFixedSize(1000,800);
+
     //文本框
-    text1 = new CodeEditor;
+    text1 = new CodeEditor(this);
+    text1->setGeometry(0,30,1000,600);
+
+    //信息返回框
+    browser = new QPlainTextEdit(this);
+    browser->setGeometry(0,630,1000,170);
+
+    //设置高亮
+    setUpHighlighter();
 
     //设置字体大小
     QFont f;
     f.setPixelSize(24);
     text1->setFont(f);
+    browser->setFont(f);
 
     //设置字体颜色
     QColor c;
     c.setRgb(255,255,255);
     text1->setPalette(c);
+    browser->setPalette(c);
 
-    //将text1放到对话框中
-    this->setCentralWidget(text1);
-
-    //设置背景颜色，调用行高亮
+    //设置背景颜色
     text1->setStyleSheet("background:#ffffff;");
+    browser->setStyleSheet("background:#ffffff;");
 
     //在菜单栏中添加功能
     file=this->menuBar()->addMenu("文件");
@@ -137,7 +145,7 @@ void MainWindow::on_open()
 }
 void MainWindow::on_about()
 {
-    QMessageBox::information(this,"帮助","QQ：2031295812");
+    QMessageBox::information(this,"帮助","QQ：123");
 }
 
 void MainWindow::on_exit()
@@ -188,22 +196,49 @@ void MainWindow::on_save()
 }
 void MainWindow::on_compile()
 {
+    browser->clear();
     QString dest=filename;
+    dest.replace(".c","");
+    cmd = new QProcess;
+    //QStringList arguments;
+    //arguments<<"gcc -o "<<dest<<" "<<filename<<"\n";
 
-    QString dest1 =  dest.replace(".c","");
+    cmd->start("cmd");
+    cmd->waitForStarted();
+    cmd->write(("gcc -o "+ dest +" "+ filename+"\n").toStdString().data());
+    cmd->waitForFinished(3000);//阻塞3秒后退出，程序不能编译太久
+    QString strTemp=QString::fromLocal8Bit(cmd->readAllStandardError());
+    cmd->kill();
+
     //qDebug() << dest;
-
-    int i = system(("gcc -o "+ dest +" "+ filename).toStdString().data());
+    //int i = system(("gcc -o "+ dest +" "+ filename).toStdString().data());
     //qDebug()<<i;
-    QMessageBox::information(this,"notify","build success!");
 
+    if (!strTemp.isEmpty())
+        browser->appendPlainText(strTemp.toStdString().data());
+    else
+        browser->appendPlainText("build success!");
 }
+//不能再外部程序运行中输入，如果代码有scanf之类的就会有问题
 void MainWindow::on_run()
 {
+    browser->clear();
     QString desfilename=filename;
+    QString strTemp;
+
     //qDebug() << desfilename;
-    desfilename.replace(".c","");
-    system(("start "+desfilename).toLatin1().data());
+
+    desfilename.replace(".c",".exe");
+    cmd->start("cmd");
+    cmd->waitForStarted();
+    cmd->write((desfilename+"\n").toStdString().data());
+
+    cmd->waitForFinished(3000);
+    strTemp=QString::fromLocal8Bit(cmd->readAll());
+    cmd->kill();
+    browser->appendPlainText(strTemp.toStdString().data());
+
+    //system(("start "+desfilename).toLatin1().data());
 
 }
 //新文本框的定义
@@ -294,4 +329,14 @@ void CodeEditor::lineNumberAreaPaintEvent(QPaintEvent *event)
         bottom = top + (int) blockBoundingRect(block).height();
         ++blockNumber;
     }
+}
+//设置语法高亮
+void MainWindow::setUpHighlighter(){
+  QFont font;
+  font.setFamily("Courier");
+  font.setFixedPitch(true);
+  //font.setPointSize(20);
+  text1->setFont(font);
+  text1->setTabStopWidth(fontMetrics().width(QLatin1Char('9'))*4);
+  highlighter=new Highlighter(text1->document());
 }
