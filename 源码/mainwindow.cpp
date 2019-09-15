@@ -196,7 +196,7 @@ void MainWindow::on_save()
 }
 void MainWindow::on_compile()
 {
-    browser->clear();
+    //browser->clear();
     QString dest=filename;
     dest.replace(".c","");
     cmd = new QProcess;
@@ -227,18 +227,18 @@ void MainWindow::on_run()
     QString strTemp;
 
     //qDebug() << desfilename;
-
     desfilename.replace(".c",".exe");
-    cmd->start("cmd");
+
+    /*cmd->start("cmd");
     cmd->waitForStarted();
     cmd->write((desfilename+"\n").toStdString().data());
 
     cmd->waitForFinished(3000);
     strTemp=QString::fromLocal8Bit(cmd->readAll());
     cmd->kill();
-    browser->appendPlainText(strTemp.toStdString().data());
+    browser->appendPlainText(strTemp.toStdString().data());*/
 
-    //system(("start "+desfilename).toLatin1().data());
+    system(("start "+desfilename).toStdString().data());
 
 }
 //新文本框的定义
