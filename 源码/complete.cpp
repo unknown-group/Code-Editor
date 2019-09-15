@@ -64,6 +64,7 @@ int CompleteListWidget::ldistance(const std::string source, const std::string ta
 
 CodeEditor::CodeEditor(QWidget *parent) : QPlainTextEdit(parent)
 {
+
     //初始化补全列表
     setUpCompleteList();
     completeWidget= new CompleteListWidget(this);

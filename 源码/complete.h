@@ -46,7 +46,7 @@ protected:
     //void resizeEvent(QResizeEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
 
-private slots:
+public slots:
     void showCompleteWidget();
 
 private:
